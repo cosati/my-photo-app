@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { ImageData } from "../types";
 import ImageCard from './ImageCard';
 import './ImageUploader.css';
+import { getGeolocationFromImage } from "../utils/exifUtils";
 
 const ImageUploader: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
@@ -14,9 +15,8 @@ const ImageUploader: React.FC = () => {
       return new Promise<ImageData>((resolve) => {
         const url = URL.createObjectURL(file);
 
-        const geolocation = "N/A (requires EXIF parsing)";
-
-        const newImage: ImageData = {
+        getGeolocationFromImage(file).then(geolocation => {
+          const newImage: ImageData = {
           id: `${file.name}-${file.size}`,
           name: file.name,
           size: file.size,
@@ -25,6 +25,7 @@ const ImageUploader: React.FC = () => {
           geolocation: geolocation,
         };
         resolve(newImage);
+        });
       });
     });
 
